@@ -4,7 +4,7 @@ const assets = [
   "/index.html",
   "/style.css",
   "/js/app.js",
-  "/js/record.js",
+  "/js/recorder.js",
   "/icons/microphone-342.png",
   "/icons/microphone-342(128).png"
 ]
