@@ -78,9 +78,10 @@ function createDownloadLink(blob) {
 
 function getLinksFromCache() {
 	var links = [];
-	localStorage.forEach(function(key, value) {
-		links.push(key, value);
-	});
+	var keys = Object.keys(localStorage);
+	for (var i = 0; i < keys.length; i++) {
+		links.push(localStorage.getItem(keys[i]));
+	}
 
 	// render the links
 	links.forEach(function(link) {
