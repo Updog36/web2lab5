@@ -35,7 +35,7 @@ self.addEventListener("fetch", (event) => {
                   if (response.status === 404) {
                       return caches.match("index.html");
                   }
-                  return caches.open(staticCacheName).then((cache) => {
+                  return caches.open(staticDiktafon).then((cache) => {
                       console.log(">>> Caching: " + event.request.url);
                       cache.put(event.request.url, response.clone());
                       return response;
