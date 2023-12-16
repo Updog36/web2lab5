@@ -9,9 +9,11 @@ var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
 var pauseButton = document.getElementById("pauseButton");
 
+
 recordButton.addEventListener("click", startRecording);
 stopButton.addEventListener("click", stopRecording);
 pauseButton.addEventListener("click", pauseRecording);
+getLinksFromCache();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('serviceWorker.js');
@@ -62,8 +64,9 @@ function createDownloadLink(blob) {
 	var li = document.createElement('li');
 	var link = document.createElement('a');
 	var filename = new Date().toISOString();
+	localStorage.setItem(filename, url);
 	au.controls = true;
-	au.src = url;
+	au.src = url;	
 	link.href = url;
 	link.download = filename+".wav";
 	link.innerHTML = "Save to disk";
@@ -71,4 +74,28 @@ function createDownloadLink(blob) {
 	li.appendChild(document.createTextNode(filename+".wav "))
 	li.appendChild(link);
 	recordingsList.appendChild(li);
+}
+
+function getLinksFromCache() {
+	var links = [];
+	localStorage.forEach(function(key, value) {
+		links.push(key, value);
+	});
+
+	// render the links
+	links.forEach(function(link) {
+		var au = document.createElement('audio');
+		var li = document.createElement('li');
+		var link = document.createElement('a');
+		var filename = new Date().toISOString();
+		au.controls = true;
+		au.src = url;	
+		link.href = url;
+		link.download = filename+".wav";
+		link.innerHTML = "Save to disk";
+		li.appendChild(au);
+		li.appendChild(document.createTextNode(filename+".wav "))
+		li.appendChild(link);
+		recordingsList.appendChild(li);
+	});
 }
