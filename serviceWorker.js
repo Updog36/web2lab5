@@ -1,6 +1,7 @@
 const staticDiktafon = "diktafon-v1"
 const assets = [
   "/",
+  "/manifest.json",
   "/index.html",
   "/style.css",
   "/js/app.js",
