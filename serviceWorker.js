@@ -2,7 +2,7 @@ const staticDiktafon = "diktafon-v1"
 const assets = [
   "/",
   "/index.html",
-  "/css/style.css",
+  "/style.css",
   "/js/app.js",
   "/js/record.js",
   "/icons/microphone-342.png",
