@@ -12,6 +12,11 @@
         "src": "icons/microphone-342(128).png",
         "sizes": "128x128",
         "type": "image/png"
+      },
+      {
+        "src": "icons/microphone-342(256).png",
+        "sizes": "256x256",
+        "type": "image/png"
       }
     ],
     "start_url": "index.html",
