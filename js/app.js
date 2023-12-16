@@ -64,7 +64,6 @@ function createDownloadLink(blob) {
 	var li = document.createElement('li');
 	var link = document.createElement('a');
 	var filename = new Date().toISOString();
-	localStorage.setItem(filename, url);
 	au.controls = true;
 	au.src = url;	
 	link.href = url;
@@ -74,29 +73,68 @@ function createDownloadLink(blob) {
 	li.appendChild(document.createTextNode(filename+".wav "))
 	li.appendChild(link);
 	recordingsList.appendChild(li);
-}
+	// save blob to indexedDB
+	var request = indexedDB.open('audioDB', 1);
+	
+	request.onerror = function(event) {
+		console.log('error: ');
+	};
 
-function getLinksFromCache() {
-	var links = [];
-	var keys = Object.keys(localStorage);
-	for (var i = 0; i < keys.length; i++) {
-		links.push(localStorage.getItem(keys[i]));
+	request.onupgradeneeded = function(event) {
+		var db = event.target.result;
+		console.log("ObjectStore created");
+		var objectStore = db.createObjectStore("audio", {keyPath: "id"});
+
+		objectStore.createIndex("id", "id", { unique: false, autoIncrement: true });
+		objectStore.createIndex("blob", "blob", { unique: false });
+		objectStore.createIndex("timestamp", "timestamp", { unique: false });
 	}
 
-	// render the links
-	links.forEach(function(link) {
-		var au = document.createElement('audio');
-		var li = document.createElement('li');
-		var link = document.createElement('a');
-		var filename = new Date().toISOString();
-		au.controls = true;
-		au.src = url;	
-		link.href = url;
-		link.download = filename+".wav";
-		link.innerHTML = "Save to disk";
-		li.appendChild(au);
-		li.appendChild(document.createTextNode(filename+".wav "))
-		li.appendChild(link);
-		recordingsList.appendChild(li);
-	});
+	request.onsuccess = function(event) {
+		var db = event.target.result;
+		var transaction = db.transaction(['audio'], 'readwrite');
+		var objectStore = transaction.objectStore('audio');
+		var request = objectStore.add({id: filename, blob: blob, timestamp: filename});
+		request.onsuccess = function(event) {
+			console.log('request success');
+		};
+		transaction.oncomplete = function(event) {
+			console.log('transaction complete');
+		};
+		db.close();
+	}
+};
+
+function getLinksFromCache() {
+	// get blobs from indexedDB
+	var request = indexedDB.open('audioDB', 1);
+	request.onerror = function(event) {
+		console.log('error: ');
+	};
+
+	request.onsuccess = function(event) {
+		var db = event.target.result;
+		var transaction = db.transaction(['audio'], 'readonly');
+		var objectStore = transaction.objectStore('audio');
+		var request = objectStore.getAll();
+		request.onsuccess = function(event) {
+			var blobs = event.target.result;
+			for (var i = 0; i < blobs.length; i++) {
+				var url = URL.createObjectURL(blobs[i].blob);
+				var au = document.createElement('audio');
+				var li = document.createElement('li');
+				var link = document.createElement('a');
+				au.controls = true;
+				au.src = url;	
+				link.href = url;
+				link.download = blobs[i].id+".wav";
+				link.innerHTML = "Save to disk";
+				li.appendChild(au);
+				li.appendChild(document.createTextNode(blobs[i].id+".wav "))
+				li.appendChild(link);
+				recordingsList.appendChild(li);
+			}
+		};
+		db.close();
+	}
 }
