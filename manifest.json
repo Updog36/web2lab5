@@ -1,6 +1,19 @@
 {
     "name": "Diktafon",
     "short_name": "Diktafon",
+    "description": "Diktafon u JS koristeći Recorder.js API",
+    "icons": [
+      {
+        "src": "icons/microphone-342.png",
+        "sizes": "64x64",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/microphone-342(128).png",
+        "sizes": "128x128",
+        "type": "image/png"
+      }
+    ],
     "start_url": "index.html",
     "display": "standalone",
     "background_color": "#fdfdfd",

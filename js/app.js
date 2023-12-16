@@ -13,6 +13,10 @@ recordButton.addEventListener("click", startRecording);
 stopButton.addEventListener("click", stopRecording);
 pauseButton.addEventListener("click", pauseRecording);
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('serviceWorker.js');
+}
+
 function startRecording() {
     var constraints = { audio: true, video:false }
 	recordButton.disabled = true;
