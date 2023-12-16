@@ -19,6 +19,11 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('serviceWorker.js');
 }
 
+// push notification
+Notification.requestPermission(function(status) {
+	console.log('Notification permission status:', status);
+});
+
 function startRecording() {
     var constraints = { audio: true, video:false }
 	recordButton.disabled = true;
@@ -73,7 +78,6 @@ function createDownloadLink(blob) {
 	li.appendChild(document.createTextNode(filename+".wav "))
 	li.appendChild(link);
 	recordingsList.appendChild(li);
-	// save blob to indexedDB
 	var request = indexedDB.open('audioDB', 1);
 	
 	request.onerror = function(event) {
@@ -103,14 +107,47 @@ function createDownloadLink(blob) {
 		};
 		db.close();
 	}
+
+	// push notification
+	if (Notification.permission == 'granted') {
+		navigator.serviceWorker.getRegistration().then(function(reg) {
+			var options = {
+				body: 'New audio file saved',
+				icon: 'icons/microphone-342(128).png',
+				vibrate: [100, 50, 100],
+				data: {
+					dateOfArrival: Date.now(),
+					primaryKey: 1
+				},
+				actions: [
+					{action: 'explore', title: 'Open App',
+						icon: 'icons/microphone-342(128).png'},
+					{action: 'close', title: 'Close notification',
+						icon: 'icons/microphone-342(128).png'},
+				]
+			};
+			reg.showNotification('New audio file saved', options);
+		});
+	}
 };
 
 function getLinksFromCache() {
 	// get blobs from indexedDB
+	// check if indexedDB exists, if not don't do anything, if yes get blobs
 	var request = indexedDB.open('audioDB', 1);
 	request.onerror = function(event) {
 		console.log('error: ');
 	};
+	
+	request.onupgradeneeded = function(event) {
+		var db = event.target.result;
+		console.log("ObjectStore created");
+		var objectStore = db.createObjectStore("audio", {keyPath: "id"});
+
+		objectStore.createIndex("id", "id", { unique: false, autoIncrement: true });
+		objectStore.createIndex("blob", "blob", { unique: false });
+		objectStore.createIndex("timestamp", "timestamp", { unique: false });
+	}
 
 	request.onsuccess = function(event) {
 		var db = event.target.result;

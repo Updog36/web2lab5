@@ -6,7 +6,8 @@ const assets = [
   "/js/app.js",
   "/js/recorder.js",
   "/icons/microphone-342.png",
-  "/icons/microphone-342(128).png"
+  "/icons/microphone-342(128).png",
+  "/icons/microphone-342(256).png"
 ]
 
 self.addEventListener("install", installEvent => {
